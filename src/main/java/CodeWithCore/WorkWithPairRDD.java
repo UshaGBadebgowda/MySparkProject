@@ -15,14 +15,39 @@ public class WorkWithPairRDD {
         JavaSparkContext javaSparkContext = new JavaSparkContext(conf);
         javaSparkContext.setLogLevel("ERROR");
 
-        List<Integer> l1 = Arrays.asList(23, 7, 8,-11,43);
+        List<Integer> l1 = Arrays.asList(4, 7, 6,-11,9);
         JavaRDD<Integer> parallelize = javaSparkContext.parallelize(l1);
 
-        List<String> l2 = Arrays.asList("Ram","Sita","Laxman","Barath","Shatrugna");
+        List<String> l2 = Arrays.asList("Rama","Sita","Laxman","Barath","Shatrugna");
         JavaRDD<String> parallelize1 = javaSparkContext.parallelize(l2);
 
         JavaPairRDD<Integer, Integer> integerJavaPairRDD = parallelize.mapToPair(x -> new Tuple2<>(x, 1));
         integerJavaPairRDD.foreach(x-> System.out.println(x));
+
+        JavaPairRDD<Integer, String> stringIntegerJavaPairRDD = parallelize1.mapToPair(x -> new Tuple2<>(x.length(),x));
+        stringIntegerJavaPairRDD.foreach(x-> System.out.println(x));
+
+        System.out.println("------------------ Zip-------------------");
+        JavaPairRDD<Integer,String> pair44 = parallelize.zip(parallelize1);
+        pair44.foreach(x->System.out.println(x));
+
+        System.out.println("----Keys-----");
+        pair44.keys().foreach(x-> System.out.println(x));
+
+        System.out.println("----Values-----");
+        pair44.values().foreach(x-> System.out.println(x));
+
+        System.out.println("----SortBy-----");
+        pair44.sortByKey().foreach(x-> System.out.println(x));
+
+        System.out.println("----GroupBy-----");
+        stringIntegerJavaPairRDD.groupByKey().foreach(x-> System.out.println(x));
+
+        System.out.println("----Join-----");
+        stringIntegerJavaPairRDD.join(pair44).foreach(x-> System.out.println(x));
+
+
         javaSparkContext.close();
+
     }
 }
